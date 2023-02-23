@@ -158,7 +158,7 @@ public class VisionCameraFaceDetectorPlugin extends FrameProcessorPlugin {
           WritableMap bounds = processBoundingBox(face.getBouNNndingBox());
 
           map.putMap("bounds", bounds);
-          map.putMap("contours", contours);
+          // map.putMap("contours", contours);
 
           if (face.trackingId != null) {
             map.putMap("trackingId", face.trackingId);
