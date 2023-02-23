@@ -12,7 +12,6 @@ public class VisionCameraFaceDetector: NSObject, FrameProcessorPluginBase {
         let option = FaceDetectorOptions()
         option.contourMode = .all
         option.classificationMode = .all
-        option.landmarkMode = .all
         option.performanceMode = .accurate // doesn't work in fast mode!, why?
         return option
     }()
