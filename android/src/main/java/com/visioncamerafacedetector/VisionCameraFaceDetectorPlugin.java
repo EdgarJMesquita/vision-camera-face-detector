@@ -160,8 +160,8 @@ public class VisionCameraFaceDetectorPlugin extends FrameProcessorPlugin {
           map.putMap("bounds", bounds);
           // map.putMap("contours", contours);
 
-          if (face.trackingId != null) {
-            map.putMap("trackingId", face.trackingId);
+          if (face.getTrackingId() != null) {
+            map.putInt("trackingId", face.getTrackingId());
           }
 
           array.pushMap(map);
