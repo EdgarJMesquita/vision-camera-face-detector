@@ -6,6 +6,7 @@ import type { Frame } from 'react-native-vision-camera';
 
 type Point = { x: number; y: number };
 export interface Face {
+  trackingId?: number;
   leftEyeOpenProbability: number;
   rollAngle: number;
   pitchAngle: number;
@@ -35,6 +36,8 @@ export interface Face {
     RIGHT_EYE: Point[];
     LEFT_CHEEK: Point[];
   };
+  frameWidth: number;
+  frameHeight: number;
 }
 
 export function scanFaces(frame: Frame): Face[] {
