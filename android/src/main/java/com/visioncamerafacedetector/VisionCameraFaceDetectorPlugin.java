@@ -135,44 +135,49 @@ public class VisionCameraFaceDetectorPlugin extends FrameProcessorPlugin {
   @Override
   public Object callback(ImageProxy frame, Object[] params) {
     @SuppressLint("UnsafeOptInUsageError")
-    Image mediaImage = frame.getImage();
+    
+    try{
+      Image mediaImage = frame.getImage();
+      if (mediaImage != null) {
+        InputImage image = InputImage.fromMediaImage(mediaImage, frame.getImageInfo().getRotationDegrees());
+        Task<List<Face>> task = faceDetector.process(image);
+        WritableNativeArray array = new WritableNativeArray();
+        try {
+          List<Face> faces = Tasks.await(task);
+          for (Face face : faces) {
+            WritableMap map =  new WritableNativeMap();
 
-    if (mediaImage != null) {
-      InputImage image = InputImage.fromMediaImage(mediaImage, frame.getImageInfo().getRotationDegrees());
-      Task<List<Face>> task = faceDetector.process(image);
-      WritableNativeArray array = new WritableNativeArray();
-      try {
-        List<Face> faces = Tasks.await(task);
-        for (Face face : faces) {
-          WritableMap map =  new WritableNativeMap();
-
-          map.putDouble("rollAngle", face.getHeadEulerAngleZ()); // Head is rotated to the left rotZ degrees
-          map.putDouble("pitchAngle", face.getHeadEulerAngleX()); // Head is rotated to the right rotX degrees
-          map.putDouble("yawAngle", face.getHeadEulerAngleY());  // Head is tilted sideways rotY degrees
-          map.putDouble("leftEyeOpenProbability", face.getLeftEyeOpenProbability());
-          map.putDouble("rightEyeOpenProbability", face.getRightEyeOpenProbability());
-          map.putDouble("smilingProbability", face.getSmilingProbability());
+            map.putDouble("rollAngle", face.getHeadEulerAngleZ()); // Head is rotated to the left rotZ degrees
+            map.putDouble("pitchAngle", face.getHeadEulerAngleX()); // Head is rotated to the right rotX degrees
+            map.putDouble("yawAngle", face.getHeadEulerAngleY());  // Head is tilted sideways rotY degrees
+            map.putDouble("leftEyeOpenProbability", face.getLeftEyeOpenProbability());
+            map.putDouble("rightEyeOpenProbability", face.getRightEyeOpenProbability());
+            map.putDouble("smilingProbability", face.getSmilingProbability());
 
 
-//          WritableMap contours = processFaceContours(face);
-          WritableMap bounds = processBoundingBox(face.getBoundingBox());
+  //          WritableMap contours = processFaceContours(face);
+            WritableMap bounds = processBoundingBox(face.getBoundingBox());
 
-          map.putMap("bounds", bounds);
-          // map.putMap("contours", contours);
+            map.putMap("bounds", bounds);
+            // map.putMap("contours", contours);
 
-          if (face.getTrackingId() != null) {
-            map.putInt("trackingId", face.getTrackingId());
+            if (face.getTrackingId() != null) {
+              map.putInt("trackingId", face.getTrackingId());
+            }
+
+            map.putInt("frameWidth", frame.getWidth());
+            map.putInt("frameHeight", frame.getHeight());
+
+            array.pushMap(map);
           }
-
-          map.putInt("frameWidth", frame.getWidth());
-          map.putInt("frameHeight", frame.getHeight());
-
-          array.pushMap(map);
+          return array;
+        } catch (Exception e) {
+          e.printStackTrace();
         }
-        return array;
-      } catch (Exception e) {
-        e.printStackTrace();
       }
+
+    } catch (Exception e){
+      e.printStackTrace();
     }
 
     return null;
