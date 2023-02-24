@@ -137,12 +137,11 @@ public class VisionCameraFaceDetectorPlugin extends FrameProcessorPlugin {
     @SuppressLint("UnsafeOptInUsageError")
     Image mediaImage = frame.getImage();
 
-    try {
-if (mediaImage != null) {
-      InputImage image = InputImage.fromMediaImage(mediaImage, frame.getImageInfo().getRotationDegrees());
-      Task<List<Face>> task = faceDetector.process(image);
-      WritableNativeArray array = new WritableNativeArray();
+    if (mediaImage != null) {
       try {
+        InputImage image = InputImage.fromMediaImage(mediaImage, frame.getImageInfo().getRotationDegrees());
+        Task<List<Face>> task = faceDetector.process(image);
+        WritableNativeArray array = new WritableNativeArray();
         List<Face> faces = Tasks.await(task);
         for (Face face : faces) {
           WritableMap map =  new WritableNativeMap();
@@ -154,9 +153,12 @@ if (mediaImage != null) {
           map.putDouble("rightEyeOpenProbability", face.getRightEyeOpenProbability());
           map.putDouble("smilingProbability", face.getSmilingProbability());
 
+
+//          WritableMap contours = processFaceContours(face);
           WritableMap bounds = processBoundingBox(face.getBoundingBox());
 
           map.putMap("bounds", bounds);
+          // map.putMap("contours", contours);
 
           if (face.getTrackingId() != null) {
             map.putInt("trackingId", face.getTrackingId());
@@ -172,11 +174,6 @@ if (mediaImage != null) {
         e.printStackTrace();
       }
     }
-    } catch(Exception e){
-      e.printStackTrace();
-    }
-
-    
 
     return null;
   }
