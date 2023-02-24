@@ -164,8 +164,8 @@ public class VisionCameraFaceDetectorPlugin extends FrameProcessorPlugin {
             map.putInt("trackingId", face.getTrackingId());
           }
 
-          map.putInt('frameWidth', frame.getWidth())
-          map.putInt('frameHeight', frame.getHeight())
+          map.putInt('frameWidth', frame.getWidth());
+          map.putInt('frameHeight', frame.getHeight());
 
           array.pushMap(map);
         }
